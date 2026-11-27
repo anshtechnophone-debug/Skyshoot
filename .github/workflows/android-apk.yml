@@ -58,8 +58,6 @@ jobs:
 
       - name: Configure Godot Android SDK paths
         shell: bash
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
         run: |
           mkdir -p "$HOME/.config/godot"
           cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
