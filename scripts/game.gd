@@ -140,7 +140,7 @@ func _shoot_player() -> void:
 func _shoot_player_weapon(target: Vector2, weapon: Dictionary) -> void:
 	var base_direction: Vector2 = (target - player.pos).normalized()
 	if base_direction.length() < 0.1: base_direction = Vector2(player.facing, 0)
-	for pellet in int(weapon.pellets):
+	for pellet in range(int(weapon.pellets)):
 		var direction := base_direction.rotated(randf_range(-float(weapon.spread), float(weapon.spread)))
 		bullets.append({"pos": player.pos + Vector2(0, -10), "vel": direction * float(weapon.speed), "enemy": false, "damage": float(weapon.damage), "life": 1.8})
 
