@@ -47,7 +47,7 @@ func _reset_match() -> void:
 	player = _fighter(Vector2(130, 790), false)
 	bots.clear()
 	for i in BOT_COUNT:
-		var x := [650.0, 1120.0, 1640.0, 2130.0][i]
+		var x: float = [650.0, 1120.0, 1640.0, 2130.0][i]
 		bots.append(_fighter(Vector2(x, 790), true))
 	bullets.clear()
 	score = 0
@@ -89,16 +89,18 @@ func _apply_physics(f: Dictionary, delta: float) -> void:
 		f.vel = Vector2.ZERO
 
 func _update_player(delta: float) -> void:
-	var axis := Input.get_axis("move_left", "move_right")
+	var axis := 0.0
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT): axis = -1.0
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT): axis = 1.0
 	if touch_left: axis = -1
 	if touch_right: axis = 1
 	if axis != 0:
 		player.facing = signf(axis)
 	player.vel.x = move_toward(player.vel.x, axis * RUN_SPEED, 1500 * delta)
-	if Input.is_action_pressed("jet") or touch_jet:
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_SPACE) or touch_jet:
 		player.vel.y = maxf(player.vel.y - JET_FORCE * delta, -510)
 	_apply_physics(player, delta)
-	if Input.is_action_pressed("fire") or touch_fire:
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or touch_fire:
 		_shoot_player()
 
 func _update_bots(delta: float) -> void:
