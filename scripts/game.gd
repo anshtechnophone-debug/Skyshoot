@@ -6,6 +6,7 @@ const RUN_SPEED := 330.0
 const JET_FORCE := 1850.0
 const BULLET_SPEED := 820.0
 const BOT_COUNT := 4
+const WEAPONS := [{"name":"PISTOL", "cooldown":0.32, "damage":24.0, "speed":820.0, "pellets":1, "spread":0.02}, {"name":"RAPID RIFLE", "cooldown":0.105, "damage":12.0, "speed":980.0, "pellets":1, "spread":0.045}, {"name":"BURST SHOTGUN", "cooldown":0.72, "damage":9.0, "speed":720.0, "pellets":6, "spread":0.28}]
 
 var player: Dictionary
 var bots: Array[Dictionary] = []
@@ -16,6 +17,8 @@ var game_started := false
 var game_over := false
 var score := 0
 var last_shot := 0.0
+var weapon_index := 0
+var match_time := 0.0
 var touch_left := false
 var touch_right := false
 var touch_jet := false
@@ -51,6 +54,8 @@ func _reset_match() -> void:
 		bots.append(_fighter(Vector2(x, 790), true))
 	bullets.clear()
 	score = 0
+	weapon_index = 0
+	match_time = 0.0
 	game_over = false
 
 func _fighter(pos: Vector2, is_bot: bool) -> Dictionary:
@@ -63,6 +68,7 @@ func _process(delta: float) -> void:
 	if game_over:
 		queue_redraw()
 		return
+	match_time += delta
 	_update_player(delta)
 	_update_bots(delta)
 	_update_bullets(delta)
@@ -122,17 +128,26 @@ func _update_bots(delta: float) -> void:
 			_shoot(bot, player.pos, true)
 
 func _shoot_player() -> void:
-	if Time.get_ticks_msec() / 1000.0 - last_shot < 0.22: return
-	last_shot = Time.get_ticks_msec() / 1000.0
+	var weapon: Dictionary = WEAPONS[weapon_index]
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - last_shot < float(weapon.cooldown): return
+	last_shot = now
 	var aim := get_global_mouse_position()
 	if touch_fire:
 		aim = player.pos + touch_aim * 500
-	_shoot(player, aim, false)
+	_shoot_player_weapon(aim, weapon)
+
+func _shoot_player_weapon(target: Vector2, weapon: Dictionary) -> void:
+	var base_direction: Vector2 = (target - player.pos).normalized()
+	if base_direction.length() < 0.1: base_direction = Vector2(player.facing, 0)
+	for pellet in int(weapon.pellets):
+		var direction := base_direction.rotated(randf_range(-float(weapon.spread), float(weapon.spread)))
+		bullets.append({"pos": player.pos + Vector2(0, -10), "vel": direction * float(weapon.speed), "enemy": false, "damage": float(weapon.damage), "life": 1.8})
 
 func _shoot(owner: Dictionary, target: Vector2, from_bot: bool) -> void:
 	var direction: Vector2 = (target - owner.pos).normalized()
 	if direction.length() < 0.1: direction = Vector2(owner.facing, 0)
-	bullets.append({"pos": owner.pos + Vector2(0, -10), "vel": direction * BULLET_SPEED, "enemy": from_bot, "life": 1.8})
+	bullets.append({"pos": owner.pos + Vector2(0, -10), "vel": direction * BULLET_SPEED, "enemy": from_bot, "damage": 11.0, "life": 1.8})
 
 func _update_bullets(delta: float) -> void:
 	for i in range(bullets.size() - 1, -1, -1):
@@ -142,12 +157,12 @@ func _update_bullets(delta: float) -> void:
 		var hit := false
 		if b.enemy:
 			if b.pos.distance_to(player.pos + Vector2(0, -12)) < 29:
-				player.hp -= 13
+				player.hp -= float(b.damage)
 				hit = true
 		else:
 			for bot in bots:
 				if bot.alive and b.pos.distance_to(bot.pos + Vector2(0, -12)) < 30:
-					bot.hp -= 25
+					bot.hp -= float(b.damage)
 					hit = true
 					if bot.hp <= 0:
 						bot.alive = false
@@ -157,8 +172,12 @@ func _update_bullets(delta: float) -> void:
 			bullets.remove_at(i)
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		game_started = false
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ESCAPE:
+			game_started = false
+		elif event.keycode == KEY_1: weapon_index = 0
+		elif event.keycode == KEY_2: weapon_index = 1
+		elif event.keycode == KEY_3: weapon_index = 2
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if not game_started:
 			game_started = true
@@ -201,7 +220,7 @@ func _draw() -> void:
 		for bot in bots:
 			if bot.alive: _draw_fighter(bot, true)
 		for b in bullets:
-			draw_circle(Vector2(b.pos.x - camera_x, b.pos.y), 6, Color("#ffe08a"))
+			draw_circle(Vector2(b.pos.x - camera_x, b.pos.y), 5 if b.enemy else 6, Color("#ff8b72") if b.enemy else Color("#ffe08a"))
 		_draw_hud()
 		_draw_touch_hud()
 	else:
@@ -238,9 +257,10 @@ func _draw_fighter(f: Dictionary, enemy: bool) -> void:
 	draw_rect(Rect2(p + Vector2(-20, -54), Vector2(40 * f.hp / 100.0, 5)), Color("#70e39a") if f.hp > 35 else Color("#ff6b6b"))
 
 func _draw_hud() -> void:
-	draw_rect(Rect2(18, 16, 370, 56), Color(0.04, 0.09, 0.15, 0.88))
+	draw_rect(Rect2(18, 16, 470, 76), Color(0.04, 0.09, 0.15, 0.88))
 	draw_string(ThemeDB.fallback_font, Vector2(32, 39), "SKYSHOOT  |  HP %d  |  SCORE %d" % [int(player.hp), score], HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
-	draw_string(ThemeDB.fallback_font, Vector2(32, 61), "AI FIGHTERS: %d" % _living_bots(), HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("#9fdcf0"))
+	draw_string(ThemeDB.fallback_font, Vector2(32, 62), "AI FIGHTERS: %d  |  %s" % [_living_bots(), WEAPONS[weapon_index].name], HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#9fdcf0"))
+	draw_string(ThemeDB.fallback_font, Vector2(32, 84), "WEAPON 1 / 2 / 3", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#a9bfd5"))
 	if _living_bots() == 0:
 		draw_string(ThemeDB.fallback_font, Vector2(450, 120), "TRAINING CLEAR!", HORIZONTAL_ALIGNMENT_LEFT, -1, 32, Color("#78f0c0"))
 
@@ -263,7 +283,8 @@ func _draw_menu() -> void:
 	draw_rect(menu_button, Color("#80edff"), false, 3)
 	draw_string(ThemeDB.fallback_font, Vector2(555, 416), "PLAY PRACTICE", HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 	draw_string(ThemeDB.fallback_font, Vector2(440, 490), "4 AI opponents  •  Solo training match", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("#a9bfd5"))
-	draw_string(ThemeDB.fallback_font, Vector2(400, 580), "A/D or touch to move   |   SPACE / JET to fly   |   CLICK / FIRE to shoot", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("#9bb2c9"))
+	draw_string(ThemeDB.fallback_font, Vector2(335, 560), "A/D MOVE  |  SPACE JETPACK  |  CLICK FIRE  |  1/2/3 CHANGE WEAPON", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#9bb2c9"))
+	draw_string(ThemeDB.fallback_font, Vector2(465, 592), "PISTOL  •  RAPID RIFLE  •  BURST SHOTGUN", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("#8ce7ff"))
 
 func _living_bots() -> int:
 	var count := 0
