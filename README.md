@@ -1,16 +1,18 @@
 # Skyshoot
 
-An original 2D side-scrolling arena shooter prototype inspired by the jetpack arena genre. It does not use Mini Militia code, branding, maps, or assets.
+An original 2D side-scrolling jetpack arena shooter. It takes inspiration from the broad genre of 2D arena shooters, not another game's code, maps, branding, or art.
 
-## Current prototype
+## Current build
 - Phaser 3 + TypeScript + Vite
-- Keyboard movement and jetpack thrust
-- Gravity, platforms and world bounds
-- Mouse aiming and firing
-- Target dummies with hit points
-- Responsive canvas scaling
+- Original code-drawn industrial arena map
+- Opening screen and Play Practice flow
+- Player movement, gravity and jetpack thrust
+- Three AI training opponents that pursue and fire at the player
+- Health, damage, respawn and score
+- Mouse/keyboard controls and on-screen touch buttons
+- Capacitor Android wrapper and GitHub Actions debug APK workflow
 
-## Run locally
+## Run in browser
 Requires Node.js 20+.
 
 ```bash
@@ -21,15 +23,12 @@ npm run dev
 ## Controls
 - A / D or Left / Right: move
 - W / Up / Space: jetpack
-- Mouse: aim
-- Left click: fire
-- R: restart
+- Mouse: aim and click to fire
+- Touch: use the on-screen movement, JET and FIRE buttons
 
-## Roadmap
-1. Mobile touch controls
-2. Original 2D character art and animation
-3. Health, respawning and weapon switching
-4. Authoritative multiplayer server and matchmaking
-5. Accounts, rooms, progression and leaderboards
+## Android APK
+The workflow at `.github/workflows/android-apk.yml` builds a debug APK on pushes to main (when game files change) or when manually started from GitHub Actions.
 
-This is an early local prototype, not yet an online multiplayer game.
+Open the repository's **Actions** tab, choose **Build Android APK**, run the workflow, then download the `skyshoot-debug-apk` artifact from the completed run.
+
+This is an early practice prototype. Online multiplayer, matchmaking, polished original art, audio, and production hardening are future milestones.
