@@ -1,19 +1,20 @@
-# Skyshoot — Native Godot edition
+# Skyshoot — Cartoon Jetpack Tag Arena
 
-Skyshoot is a native 2D Android jetpack tag-arena game built with Godot 4 and GDScript.
+Skyshoot is a colorful, cartoon-style 2D mobile arena game built with Godot 4 and GDScript.
 
-## Current features
-- Code-drawn industrial 2D arena with platforms
-- Opening screen and solo practice match
-- Four AI runners that pursue and jump toward the player
-- Jetpack movement and proximity-based tag scoring
-- Five-tag match limit, respawning and score tracking
-- Touch HUD plus keyboard/mouse controls
-- No weapons, projectiles, shooting or damage mechanics
+## Current game direction
+- Landscape 2D arena with a bright, playful cartoon look
+- Three selectable world palettes: Sunny Isles, Candy Canyon, and Cloud Kingdom
+- Four AI runners, jetpack movement, and proximity-based tag challenges
+- Character color selection, score, match timer, and match results
+- Touch controls for movement, jetpack, and tagging
+- Keyboard controls for desktop testing
+- Pause, resume, replay, and return-to-menu flow
+- No weapons, projectiles, shooting, or damage mechanics
 
 ## Android APK
 GitHub Actions workflow: `.github/workflows/android-apk.yml`
 
-Every relevant push to `main` and manual workflow dispatch builds a debug APK. Open the repository's **Actions** tab and download the **Skyshoot-Android-APK** artifact from a successful run.
+Pushes to `main` and manual workflow dispatch build a debug APK. Download the `Skyshoot-Android-APK` artifact from a successful run in the repository's **Actions** tab.
 
-The workflow produces an installable debug APK, not a Play Store-signed release. Online multiplayer, matchmaking, sound, polished sprite animation and device testing remain future work.
+The workflow creates an installable debug APK, not a Play Store-signed release. The game still needs a successful CI export and real-device testing before it should be considered release-ready.
