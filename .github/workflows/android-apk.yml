@@ -76,7 +76,7 @@ jobs:
       - name: Export installable debug APK
         run: |
           mkdir -p build
-          godot --headless --path . --export-debug "Android" build/Skyshoot.apk
+          godot --headless --verbose --path . --export-debug "Android" build/Skyshoot.apk
           test -s build/Skyshoot.apk
 
       - name: Upload APK
