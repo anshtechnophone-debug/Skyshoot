@@ -168,13 +168,15 @@ func _input(event: InputEvent) -> void:
 		if not game_started:
 			game_started = true
 			_reset_match()
+		elif game_over:
+			_reset_match()
 		else:
 			_tag_bot()
 	if event is InputEventScreenTouch:
 		_handle_touch(event.position, event.pressed)
 
 func _handle_touch(pos: Vector2, pressed: bool) -> void:
-	if not game_started:
+	if not game_started or game_over:
 		if pressed:
 			game_started = true
 			_reset_match()
