@@ -1,34 +1,18 @@
-# Skyshoot
+# Skyshoot — Native Godot edition
 
-An original 2D side-scrolling jetpack arena shooter. It takes inspiration from the broad genre of 2D arena shooters, not another game's code, maps, branding, or art.
+Skyshoot is being rebuilt as a native 2D Android game using Godot 4 and GDScript. The Phaser/TypeScript prototype is retained in Git history, but the native Godot project is now the main game.
 
-## Current build
-- Phaser 3 + TypeScript + Vite
-- Original code-drawn industrial arena map
-- Opening screen and Play Practice flow
-- Player movement, gravity and jetpack thrust
-- Three AI training opponents that pursue and fire at the player
-- Health, damage, respawn and score
-- Mouse/keyboard controls and on-screen touch buttons
-- Capacitor Android wrapper and GitHub Actions debug APK workflow
-
-## Run in browser
-Requires Node.js 20+.
-
-```bash
-npm install
-npm run dev
-```
-
-## Controls
-- A / D or Left / Right: move
-- W / Up / Space: jetpack
-- Mouse: aim and click to fire
-- Touch: use the on-screen movement, JET and FIRE buttons
+## Current prototype features
+- Native Godot 4 project, no browser or WebView runtime
+- Original code-drawn industrial 2D arena
+- Opening screen and solo practice match
+- Four AI opponents that pursue, jump and shoot
+- Jetpack movement, platforms, projectiles, health, scoring and respawning
+- Touch HUD plus keyboard/mouse controls
 
 ## Android APK
-The workflow at `.github/workflows/android-apk.yml` builds a debug APK on pushes to main (when game files change) or when manually started from GitHub Actions.
+GitHub Actions workflow: `.github/workflows/android-apk.yml`
 
-Open the repository's **Actions** tab, choose **Build Android APK**, run the workflow, then download the `skyshoot-debug-apk` artifact from the completed run.
+Every relevant push to `main` and manual workflow dispatch builds a debug APK. Open the repository's **Actions** tab and download the **Skyshoot-Android-APK** artifact from a successful run.
 
-This is an early practice prototype. Online multiplayer, matchmaking, polished original art, audio, and production hardening are future milestones.
+This repository build pipeline produces an installable debug APK; it does not yet produce a Play Store-signed release. Online multiplayer, matchmaking servers, sound, polished sprite animation and device testing remain future work.
