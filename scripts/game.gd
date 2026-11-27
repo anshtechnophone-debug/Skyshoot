@@ -314,7 +314,7 @@ func _draw_character(f: Dictionary, enemy: bool) -> void:
 	var head := p + Vector2(0, -43 + bob)
 	var torso := p + Vector2(0, -19 + bob)
 	# Soft shadow and backpack.
-	draw_ellipse(p + Vector2(0, 2), Vector2(23, 6), Color(0.12, 0.20, 0.25, 0.22))
+	draw_circle(p + Vector2(0, 2), 18.0, Color(0.12, 0.20, 0.25, 0.22))
 	draw_rect(Rect2(p + Vector2(-20 * facing - 4, -28 + bob), Vector2(10, 25)), Color("#5d6b83"))
 	draw_circle(p + Vector2(-20 * facing, -17 + bob), 6, Color("#a9d9ed"))
 	# Legs and shoes animate while running.
