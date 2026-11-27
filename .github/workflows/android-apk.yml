@@ -56,6 +56,12 @@ jobs:
           unzip -q "$RUNNER_TEMP/godot/templates.tpz" -d "$RUNNER_TEMP/godot/templates"
           cp "$RUNNER_TEMP/godot/templates/templates/"* "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
 
+      - name: Create Android debug signing key
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+
       - name: Configure Godot Android SDK paths
         shell: bash
         run: |
@@ -66,6 +72,9 @@ jobs:
           [resource]
           export/android/android_sdk_path = "$ANDROID_HOME"
           export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/debug_keystore = "$HOME/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_password = "android"
           EOF
 
       - name: Validate project and import assets
@@ -77,6 +86,7 @@ jobs:
       - name: Export installable debug APK
         run: |
           mkdir -p build
+          godot --headless --editor --path . --quit --verbose
           godot --headless --verbose --path . --export-debug "Android" build/Skyshoot.apk
           test -s build/Skyshoot.apk
 
